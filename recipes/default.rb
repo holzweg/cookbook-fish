@@ -5,8 +5,6 @@
 # Author:: Gabor Pihaj
 #
 
-Chef::Log.info("install_method: #{node['fish']['install_method']}")
-
 case node['fish']['install_method']
 when "package"
   case node['platform_family']
@@ -14,7 +12,6 @@ when "package"
     package "fish"
   end
 when "source"
-  Chef::Log.info("Install from source")
   install_dir = node['fish']['src_dir']
 
   include_recipe "build-essential"
@@ -46,6 +43,19 @@ when "source"
       make
       make install
     EOH
+
+    not_if { ::File.exists?('/usr/local/bin/fish') }
   end
 
+end
+
+if node['fish']['set_as_default']
+  bash "Enable fish as login shell" do
+  	code "echo /usr/local/bin/fish >>/etc/shells"
+  	not_if "grep -q fish /etc/shells"
+  end
+
+  bash "Set as default" do 
+  	code "chsh -s /usr/local/bin/fish vagrant"
+  end
 end
