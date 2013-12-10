@@ -37,14 +37,14 @@ when "source"
     cwd install_dir
     code <<-EOH
       tar zxf #{tarball}
-      cd fish
+      cd fish-#{node['fish']['release']} || cd fish
       autoconf
       ./configure
       make
       make install
     EOH
 
-    not_if { ::File.exists?('/usr/local/bin/fish') }
+    not_if "fish --version 2>&1 | grep -q #{node['fish']['release']}"
   end
 
 end
@@ -57,5 +57,6 @@ if node['fish']['set_as_default']
 
   bash "Set as default" do 
   	code "chsh -s /usr/local/bin/fish vagrant"
+    not_if "grep vagrant /etc/passwd | grep -q \/usr\/local\/bin\/fish"
   end
 end
