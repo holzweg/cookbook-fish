@@ -12,9 +12,10 @@ when "package"
     package "fish"
   end
 when "source"
-  install_dir = node['fish']['src_dir']
-
   include_recipe "build-essential"
+  include_recipe "git"
+
+  install_dir = node['fish']['src_dir']
 
   package "libncurses5-dev"
 
@@ -25,20 +26,16 @@ when "source"
     action :create
   end
 
-  tarball = "fish-#{node['fish']['release']}.tar.gz"
-  remote_url = "http://fishshell.com/files/#{node['fish']['release']}/#{tarball}"
-
-  remote_file "#{install_dir}/#{tarball}" do
-  	source remote_url
-  	action :create_if_missing
+  git install_dir do
+    repository "https://github.com/fish-shell/fish-shell.git"
+    revision node['fish']['version']
+    action :sync
   end
 
   bash "Make and install fish shell" do
     cwd install_dir
     code <<-EOH
-      tar zxf #{tarball}
-      cd fish-#{node['fish']['release']} || cd fish
-      autoconf
+     autoconf
       ./configure
       make
       make install
