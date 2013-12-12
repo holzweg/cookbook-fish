@@ -8,7 +8,7 @@
 case node['fish']['install_method']
 when "package"
   case node['platform_family']
-  when /(debian|centos|fedira)/
+  when /(debian|rhel)/
     package "fish"
   end
 when "source"
@@ -17,7 +17,12 @@ when "source"
 
   install_dir = node['fish']['src_dir']
 
-  package "libncurses5-dev"
+  case node['platform_family']
+  when "debian"
+    package "libncurses5-dev"
+  when "rhel"
+    package "ncurses-devel"
+  end
 
   directory install_dir do
     owner "root"
