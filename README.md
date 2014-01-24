@@ -1,6 +1,8 @@
 fish Cookbook
 =============
 Installs/configure fish shell
+NOTE: Will not improve your cooking skills on either Actinopterygii or Crustacea.
+
 http://fishshell.com/
 
 Requirements
@@ -29,3 +31,15 @@ Just include `fish` in your node's `run_list`:
   ]
 }
 ```
+
+Optional oh-my-fish Installation
+-----
+
+If you wish to install the awesome oh-my-fish (https://github.com/bpinto/oh-my-fish),
+then specify the users you would like to be oh-my-fished as an array in
+
+- default['fish']['ohmyfish']['install_for_users']
+
+and include the recipe `fish::ohmyfish`
+
+WARNING: Existing .config/fish/fish.config in the home directories of these users will be overwritten.
